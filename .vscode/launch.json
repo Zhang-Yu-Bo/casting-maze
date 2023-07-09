@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Run Maze",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "output": "maze"
+        }
+    ]
+}
