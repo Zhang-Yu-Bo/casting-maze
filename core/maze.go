@@ -25,17 +25,30 @@ func (g *Game) drawMaze(screen *ebiten.Image) {
 		}
 
 		pTh := float32(math.Abs(ray.Angle-beginAngle)/FOV) * float32(numOfRays)
-		depth := Clamp(ray.Length(), 0, g.RayLength, false)
+		distance := ray.Length() * math.Cos(math.Abs(ray.Angle-g.CurrentDir)*math.Pi/180)
+		depth := Clamp(distance, 0, g.RayLength, false)
 		wHeight := Weight(float64(sHeight), depth, g.RayLength)
 
 		postX := startX + pTh*stepWidth
 		postY := (float64(sHeight) - wHeight) / 2
-		vector.DrawFilledRect(screen, postX, float32(postY), stepWidth, float32(wHeight), ray.Color, true)
+		vector.DrawFilledRect(screen, postX, float32(postY), stepWidth, float32(wHeight), WeightColor(ray.Color, depth, g.RayLength), true)
 	}
 }
 
 func Weight(val, p, max float64) float64 {
 	return val * (1 - p/max)
+}
+
+func WeightColor(c color.Color, p, max float64) color.Color {
+	r, g, b, _ := c.RGBA()
+	r, g, b = r>>8, g>>8, b>>8
+	weight := 1 - (p / max)
+	return color.RGBA{
+		uint8(float64(r) * weight * weight),
+		uint8(float64(g) * weight * weight),
+		uint8(float64(b) * weight * weight),
+		255,
+	}
 }
 
 func (g *Game) drawMinimap(screen *ebiten.Image) {
